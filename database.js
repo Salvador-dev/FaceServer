@@ -1,16 +1,19 @@
+// importar funciones mysql
 const mysql = require('mysql');
 
-const mysqlConection = mysql.createConnection({
+// logueo a la base de datos en phpmyadmin de xamp
+const mysqlConnection = mysql.createConnection({
 
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'uploadBD',
+    host: 'localhost', // servidor de xamp
+    user: 'root', // usuario basico
+    password: '', // no se establecio 
+    database: 'uploaddb', // base de datos donde se va a trabajar
     multipleStatements: true,
 
 });
 
-mysqlConection.connect(function(err) {
+// conectar con la base de datos
+mysqlConnection.connect(function(err) {
 
     if (err) {
 
@@ -25,4 +28,5 @@ mysqlConection.connect(function(err) {
 
 });
 
-module.exports = mysqlConection;
+// exportar modulo
+module.exports = mysqlConnection;

@@ -1,28 +1,30 @@
 {
-
+  "name": "faceserver",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
   "scripts": {
-
+    "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon app.js"
-
   },
-
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Salvador-dev/FaceServer.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Salvador-dev/FaceServer/issues"
+  },
+  "homepage": "https://github.com/Salvador-dev/FaceServer#readme",
   "dependencies": {
-
     "bcryptjs": "^2.4.3",
-
     "cors": "^2.8.5",
-
     "express": "^4.18.2",
-
     "morgan": "^1.10.0",
-
     "multer": "^1.4.5-lts.1",
-
     "mysql": "^2.18.1",
-
     "nodemon": "^2.0.20"
-
   }
-
 }
-

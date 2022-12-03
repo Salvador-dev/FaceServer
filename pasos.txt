@@ -1,0 +1,26 @@
+/* PASOS DE CREACION DE ESTE PROYECTO */
+
+-Instalar XAMP y mover esta carpeta al directorio "htdocs", trabajar desde ahi.
+
+-Instalar postman.
+
+-Instalar el package.json con el comando "npm init -y" y agregar el script "dev nodemon app.js"
+
+-Instalar los paquetes necesarios para trabajar en el proyecto:
+    express: libreria
+    cors: para cabeceras http, comunicar backend y frontend
+    bcryptjs: encriptacion de passwords
+    multer: middleware para carga de archivos al servidor
+    morgan: mostrar comportamiento del servidor al solicitar o enviar info
+    nodemon: hace reinicios del servidor al hacer cambios en el proyecto
+    mysql: base de datos
+
+    instalar cada uno o todos con "npm i express cors bcryptjs multer morgan nodemon mysql".
+
+-Empezar servidor xamp y crear base de datos en phpmyadmin, crear tabla de datos.
+
+-Creacion del app.js y carpeta uploads para subir las imagenes.
+
+-Hacer pruebas con el comando npm run dev.
+
+-Al momento de hacer pruebas con postman, crear coleccion, crear una consulta con el metodo post y la url http://localhost:3000/file.

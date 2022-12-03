@@ -1,29 +1,41 @@
+// importar paquetes
 const express = require('express');
 const cors = require('cors');
 const multer = require('multer');
-const path = require('path');
 const bcrypt = require('bcryptjs');
 const morgan = require('morgan');
+
+// para trabajar con rutas
+const path = require('path');
+
+
+// importar archivo para conectar a la base de datos
 const mysqlConnection = require('./database');
+
 const fs = require('fs').promises;
 
-
+// trabajar con las funcionalidades de express
 const app = express();
 
+// trabajar con los middlewares
 app.use(cors({ origin: "*" }));
 app.use(express.json());
 app.use(morgan('dev'));
 
 
-//SUBIR IMAGENES CON MULTER
+//SUBIR IMAGENES CON MULTER ***************************************************************************
 
+// dar acceso a la carpeta
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 const storage = multer.diskStorage({
 
+    // ruta de la imagen donde se va a guardar
     destination: (req, file, cb) => {
         cb(null, 'uploads')
     },
+
+    // nombre de la imagen que se va a guardar
     filename: (req, file, cb) => {
 
         cb(null, file.originalname)
@@ -33,15 +45,18 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-//SUBIR IMAGENES Y PASSWORD
+//SUBIR IMAGENES Y PASSWORD ***************************************************************************
 
+// envio de datos a la base de datos con post
 app.post('/file', upload.single('file'), async(req, res, next) => {
 
     const file = req.file;
     const password = req.body.password;
 
+    // encriptacion de password
     let passwordHash = await bcrypt.hash(password, 8);
 
+    // estructura de la tabla
     const filesImg = {
 
         id: null,
@@ -61,104 +76,101 @@ app.post('/file', upload.single('file'), async(req, res, next) => {
 
     res.send(file)
     console.log(filesImg);
-
-    mysqlConnection.query('INSERT INTO files set ?', [filesImg]);
+ 
+    mysqlConnection.query('INSERT INTO datos set ?', [filesImg]);
 
 });
 
-// //MOSTRAR TODA LAS IMAGENES
+//MOSTRAR TODA LAS IMAGENES ***************************************************************************
 
-// app.get('/upload', (req, res) => {
+app.get('/upload', (req, res) => {
 
-//     mysqlConnection.query('SELECT * FROM files', (err, rows, fileds) => {
+    mysqlConnection.query('SELECT * FROM datos', (err, rows, fileds) => {
 
-//         if (!err) {
+        if (!err) {
 
-//             res.json(rows);
+            res.json(rows);
 
-//         } else {
+        } else {
 
-//             console.log(err);
-//         }
+            console.log(err);
+        }
 
-//     });
+    });
 
-// });
+});
 
-// //MOSTRAR UNA SOLA IMAGEN
+//MOSTRAR UNA SOLA IMAGEN ***************************************************************************
 
-// app.get('/imagen/:id', (req, res) => {
+app.get('/imagen/:id', (req, res) => {
 
-//     const id = req.params.id;
+    const id = req.params.id;
 
-//     mysqlConnection.query('SELECT imagen FROM files WHERE id = ?', id, (err, rows, fields) => {
-//         [{ imagen }] = rows;
+    mysqlConnection.query('SELECT imagen FROM datos WHERE id = ?', id, (err, rows, fields) => {
+        [{ imagen }] = rows;
 
-//         res.send({ imagen });
-//     });
+        res.send({ imagen });
+    });
 
-// });
-
-
+});
 
 
-// //ELIMINAR IMAGENES
+//ELIMINAR IMAGENES ***************************************************************************
 
-// app.delete('/delete/:id', (req, res) => {
+app.delete('/delete/:id', (req, res) => {
 
-//     const { id } = req.params;
-//     deleteFile(id);
-//     mysqlConnection.query('DELETE FROM files WHERE id=?', [id]);
-//     res.json({ message: "Imagen y password eliminados correctamente" });
+    const { id } = req.params;
+    deleteFile(id);
+    mysqlConnection.query('DELETE FROM datos WHERE id=?', [id]);
+    res.json({ message: "Imagen y password eliminados correctamente" });
 
-// });
+});
 
-// function deleteFile(id) {
+function deleteFile(id) {
 
-//     mysqlConnection.query('SELECT * FROM files WHERE id = ?', [id], (err, rows, fields) => {
+    mysqlConnection.query('SELECT * FROM datos WHERE id = ?', [id], (err, rows, fields) => {
 
-//         [{ imagen }] = rows;
+        [{ imagen }] = rows;
 
-//         fs.unlink(path.resolve('./' + imagen)).then(() => {
-//             console.log('Imagen eliminada del servidor');
-//         })
-//     });
+        fs.unlink(path.resolve('./' + imagen)).then(() => {
+            console.log('Imagen eliminada del servidor');
+        })
+    });
 
-// }
+}
 
-// //LOGIN
+//LOGIN ***************************************************************************
 
-// app.post('/auth/:id', (req, res) => {
+app.post('/auth/:id', (req, res) => {
 
-//     const id = req.params.id;
+    const id = req.params.id;
 
-//     let pass = req.body.password;
+    let pass = req.body.password;
 
-//     mysqlConnection.query('SELECT id, password FROM files WHERE id= ?', id, (err, rows, fields) => {
+    mysqlConnection.query('SELECT id, password FROM datos WHERE id = ?', id, (err, rows, fields) => {
 
+        [{ password }] = rows;
 
-//         [{ password }] = rows;
+        let passVerificado = bcrypt.compareSync(pass, password);
 
-//         let passVerificado = bcrypt.compareSync(pass, password);
+        if (!passVerificado) {
 
-//         if (!passVerificado) {
+            res.status('400').json({ message: 'El password es invalido' });
 
-//             res.status('400').json({ message: 'El password es invalido' });
+        } else {
 
-//         } else {
+            res.send({ message: 'OK' });
 
-//             res.send({ message: 'OK' });
+        }
 
-//         }
+    });
 
-//     })
-
-// });
+});
 
 
 
 
-//PUERTO DE CONEXIÓN
+//PUERTO DE CONEXIÓN ***************************************************************************
 
 app.listen(3000, () => {
     console.log('Servidor corriendo en el puerto 3000...');
